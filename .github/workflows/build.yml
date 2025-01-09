@@ -26,6 +26,10 @@ on:
         description: '使用 ssh 连接到编译环境 (Connect to the build environment using ssh)'
         type: boolean
         default: false
+      hashver:
+        description: 'hash version'
+        type: string
+        default: '769da0b165110640100c729e8398d826'
 
 jobs:
   build:
@@ -75,12 +79,12 @@ jobs:
       - name: 多线程编译 ImmortalWrt (Build ImmortalWrt multithreading)
         if: ${{inputs.multithreading == true}}
         working-directory: ImmortalWrt
-        run: make -j$(nproc) V=s
+        run: make LINUX_VERMAGIC:=${{ inputs.HASHVER }} -j$(nproc) V=s
 
       - name: 单线程编译 ImmortalWrt (Build ImmortalWrt single thread)
         if: ${{inputs.multithreading == false}}
         working-directory: ImmortalWrt
-        run: make -j1 V=s
+        run: make LINUX_VERMAGIC:=${{ inputs.HASHVER }} -j1 V=s
 
       - name: 上传编译结果到 Artifact (Upload build result to Artifact)
         uses: actions/upload-artifact@v4
